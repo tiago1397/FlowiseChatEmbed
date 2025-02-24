@@ -76,7 +76,6 @@ export type IAgentReasoning = {
   messages?: string[];
   usedTools?: any[];
   artifacts?: FileUpload[];
-  sourceDocuments?: any[];
   instructions?: string;
   nextAgent?: string;
 };
@@ -100,7 +99,6 @@ export type MessageType = {
   messageId?: string;
   message: string;
   type: messageType;
-  sourceDocuments?: any;
   fileAnnotations?: any;
   fileUploads?: Partial<FileUpload>[];
   artifacts?: Partial<FileUpload>[];
@@ -167,7 +165,7 @@ export type LeadsConfig = {
   successMessage?: string;
 };
 
-const defaultWelcomeMessage = 'Hi there! How can I help?';
+const defaultWelcomeMessage = 'Olá! Eu sou o Assistente de Pagamentos da Springevents. Por favor insira o seu nome completo.';
 
 /*const sourceDocuments = [
     {
@@ -399,19 +397,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     });
   };
 
-  const updateLastMessageSourceDocuments = (sourceDocuments: any) => {
-    setMessages((data) => {
-      const updated = data.map((item, i) => {
-        if (i === data.length - 1) {
-          return { ...item, sourceDocuments };
-        }
-        return item;
-      });
-      addChatMessage(updated);
-      return [...updated];
-    });
-  };
-
   const updateLastMessageUsedTools = (usedTools: any[]) => {
     setMessages((prevMessages) => {
       const allMessages = [...cloneDeep(prevMessages)];
@@ -584,9 +569,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
             break;
           case 'token':
             updateLastMessage(payload.data);
-            break;
-          case 'sourceDocuments':
-            updateLastMessageSourceDocuments(payload.data);
             break;
           case 'usedTools':
             updateLastMessageUsedTools(payload.data);
@@ -806,7 +788,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
           const newMessage = {
             message: text,
             id: data?.chatMessageId,
-            sourceDocuments: data?.sourceDocuments,
             usedTools: data?.usedTools,
             fileAnnotations: data?.fileAnnotations,
             agentReasoning: data?.agentReasoning,
@@ -976,7 +957,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                 rating: message.rating,
                 dateTime: message.dateTime,
               };
-              if (message.sourceDocuments) chatHistory.sourceDocuments = message.sourceDocuments;
               if (message.fileAnnotations) chatHistory.fileAnnotations = message.fileAnnotations;
               if (message.fileUploads) chatHistory.fileUploads = message.fileUploads;
               if (message.agentReasoning) chatHistory.agentReasoning = message.agentReasoning;
@@ -1473,10 +1453,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         showAgentMessages={props.showAgentMessages}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
                         sourceDocsTitle={props.sourceDocsTitle}
-                        handleSourceDocumentsClick={(sourceDocuments) => {
-                          setSourcePopupSrc(sourceDocuments);
-                          setSourcePopupOpen(true);
-                        }}
                         dateTimeToggle={props.dateTimeToggle}
                         renderHTML={props.renderHTML}
                       />
